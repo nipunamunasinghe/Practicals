@@ -1,0 +1,62 @@
+--- type for varray
+CREATE TYPE exchanges_varray as VARRAY(3)
+OF VARCHAR(40)
+/
+
+--- type for object of stock
+CREATE TYPE stock_type AS OBJECT
+(
+  companyName VARCHAR(20),
+  currentPrice NUMBER(6,2),
+  exchanges exchanges_varray,
+  lastDivident NUMBER(4,2),
+  eps NUMBER(4,2)
+)
+/
+
+CREATE TYPE address_type AS OBJECT
+(
+  streetNo char(10),
+  streetName char(15),
+  subrub char(20),
+  state char(15),
+  pin char(10)
+)
+/
+
+CREATE TYPE investment_type AS OBJECT(
+  company REF stock_type,
+  purchasePrice NUMBER(6,2),
+  purchaseDate DATE,
+  quantity NUMBER(6)
+)
+
+CREATE TYPE investment_nestedtable_type AS TABLE OF investment_type
+
+CREATE TYPE client_type as OBJECT(
+  name varchar(15),
+  address address_type,
+  investment investment_nestedtable_type
+)
+/
+  
+CREATE TABLE stock of stock_type(
+  CONSTRAINT stock_pk PRIMARY KEY(companyName)
+)
+/
+
+CREATE TABLE clients of client_type(
+  CONSTRAINT clients_pk PRIMARY KEY(name)
+) NESTED TABLE investment STORE AS investment_tab
+/
+
+ALTER TABLE investment_tab
+ADD SCOPE FOR (company) Is stock
+
+
+--- insert data
+insert into stock values (stock_type('GM',60.00,exchanges_varray('NewYork'),2.50,9.20)) /
+
+SELECT distint c.name, i.company.company,i.company.cprice, i.company.ldivident, i.company.eps
+FROM client_otab c, table(c.investments)i
+/

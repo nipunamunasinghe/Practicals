@@ -1,0 +1,81 @@
+
+create table client(
+    clno char(3),
+    name varchar(12),
+    adress varchar(30),
+    constraint client_pk PRIMARY KEY(clno)
+    );
+
+create table stock (
+    company char(7),
+    price number(6,2),
+    dividend number(4,2),
+    eps number(4,2),
+    constraint stock_pk PRIMARY KEY(company)
+);
+    
+create table trading(
+company char(7),
+exchange varchar(12),
+constraint trading_pk PRIMARY KEY (company,exchange),
+constraint tradingexchange_fK FOREIGN KEY(company) REFERENCES stock
+);
+
+create table purchase(
+    clno char(3),
+    company char(7),
+    pdate date,
+    qty number(6),
+    price number(6,2),
+    constraint purchase_PK PRIMARY KEY(clno,company,pdate),
+    constraint purchase_FK1 FOREIGN KEY(clno) REFERENCES client,
+    constraint purchase_FK2 FOREIGN KEY(company) REFERENCES stock
+);
+Insert into client values ('c01', 'John Smith', '3 East Av, Bentley, WA 6102');
+Insert into client values ('c02', 'jill Brody','42 Ben St,perth,WA 6001');
+
+select * from trading
+
+Insert into stock values ('BHP',10.50,1.50,3.20);
+Insert into stock values ('IBM',70.00,4.25,10.00);
+Insert into stock values ('INTEL',76.50,5.00,12.40);
+Insert into stock values ('FORD',40.00,2.00,8.50);
+Insert into stock values ('GM',60.00,2.50,9.20);
+Insert into stock values ('INFOSYS',45.00,3.00,7.80);
+
+insert into trading values ('BHP','Sydney');
+insert into trading values ('BHP','New York');
+insert into trading values ('IBM','New York');
+insert into trading values ('IBM','London');
+insert into trading values ('IBM','Tokyo');
+insert into trading values ('INTEL','New York');
+insert into trading values ('INTEL','London');
+insert into trading values ('FORD','New York');
+insert into trading values ('GM','New York');
+insert into trading values ('INFOSYS','New York');
+
+insert into purchase values('c01','BHP','02-OCT-2001',1000,12.00);
+insert into purchase values('c01','BHP','08-JUN-2002',2000,10.50);
+insert into purchase values('c01','IBM','12-FEB-2000',500,58.00);
+insert into purchase values('c01','IBM','10-APR-2001',1200,65.00);
+insert into purchase values('c01','INFOSYS','11-AUG-2001',1000,64.00);
+
+insert into purchase values('c02','INTEL','30-JAN-2000',300,35.00);
+insert into purchase values('c02','INTEL','30-JAN-2001',300,54.00);
+insert into purchase values('c02','INTEL','02-OCT-2001',300,60.00);
+insert into purchase values('c02','FORD','05-OCT-1999',300,40.00);
+insert into purchase values('c02','GM','12-DEC-2000',300,55.00);
+
+
+select * from purchase
+select * from stock
+select * from client
+
+select distinct c.name,p.company,s.price,s.dividened,s.eps
+from client  c,purchase p,stock s
+where c.clno = p. clno and p.company =s.company 
+
+
+
+
+

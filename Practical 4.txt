@@ -1,0 +1,84 @@
+--q1 a
+alter type stock_type
+add member function yiels return float
+cascade
+/
+    create or replace type body stock_type as
+    @member function yield return float is
+    begin
+    return ((self.lastdevident/self.currentPrice)*100);
+    end yield;
+   end;
+
+--q1 b
+
+alter type stock_type
+add memeber function exchange(rate float) return float
+cascade 
+--reference table should update therefore we use cascade key word
+/
+    create or replace type body stock_type as 
+    @member function exchange(rate float) return float is
+    begin
+    return(self.currentPrice *rate);
+    end exchange;
+end;
+
+
+--q1 c
+
+alter type stock_type
+add member function no_of_trades return integer
+cascade
+    /
+    
+creare or replace type body stock_type as
+    @member function no_of_trades return integer is
+    count integer;
+    begin 
+    select count (e.column_value) into count
+    from table (self.exchanges) e;
+return countt
+    end no_of_trades;
+end;
+
+    
+--q1 d
+alter type client_type
+add member function purchase return float
+cascade
+/
+create or replace type body as client_type as
+    @member function  purchase return float is
+    pvalue float;
+    begin
+        select sum(i.purchasePrice * i.quantity)into pvalue
+        from table(self.investment0 ) i;
+    return pvalue;
+    end
+end;
+
+
+
+--q1 e
+alter type client_type
+add member function profit return float
+cascade 
+/
+create or replace type body as client_type as
+ @member function profit return float is
+ begin
+ select sum((i.company.currentPrice.i.purcgasePrice)* i.quantity)into profit
+    from table(self.investment) i;
+ return profit;
+ end profit;
+end;
+
+--q2 a
+--calling member functions
+select s.companyName ,e.column_value ,s.yeild() , s.exchange(0.74)
+from stocks s , table(s.ex_traded) e
+
+--q2 b
+select s.companyName , s.currentPrice , s.no_of_trades()
+from stocks s
